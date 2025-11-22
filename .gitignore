@@ -1,0 +1,63 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+logs/
+*.out
+
+# Data (large files)
+dataset/Cuaca Indonesia by Provinsi 2010-2020/*.csv
+dataset/Data Produksi Pangan by Provinsi 2010-2015/*.csv
+dataset/processed/*.csv
+
+# Models (large files)
+models/*.pkl
+
+# Docker volumes
+grafana/
+
+# Airflow
+plugins/
+logs/dag_id=*/
+logs/dag_processor_manager/
+logs/scheduler/
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Environment
+.env
+
+# CSV exports
+*.csv
+tableau_data/
+
+# MySQL dumps
+*.sql.gz
+*.sql.bz2
