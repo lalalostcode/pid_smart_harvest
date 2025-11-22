@@ -175,14 +175,14 @@ Smart Harvest adalah sistem prediksi hasil panen berbasis **Data Engineering** d
 
 ### Visual Architecture
 
-<img src="/home/lalalostnux/PemrosesaInfrastrukturData/DE_SmartHarvest/image/architecture.png" width="1000"/>  
+<img src="image/architecture.png" width="1000"/>  
 
 ---
 
 ## 🗄️ Data Warehouse Design
 
 ### Star Schema Architecture
-<img src="/home/lalalostnux/PemrosesaInfrastrukturData/DE_SmartHarvest/image/erd.png" width="1000"/>
+<img src="image/erd.png" width="1000"/>
 
 ### Database Schema Details
 
