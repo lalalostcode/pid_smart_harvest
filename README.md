@@ -37,7 +37,7 @@ Smart Harvest adalah sistem prediksi hasil panen berbasis **Data Engineering** d
 - **Machine Learning** untuk prediksi produksi
 - **Real-time Streaming** dengan Apache Kafka
 - **Workflow Orchestration** dengan Apache Airflow
-- **Data Visualization** dengan Grafana
+- **Data Visualization** dengan Streamlit
 
 ### Key Features
 
@@ -46,7 +46,7 @@ Smart Harvest adalah sistem prediksi hasil panen berbasis **Data Engineering** d
 ✅ **ML-based Prediction** - 7 commodity models (padi, jagung, dll)  
 ✅ **Real-time Streaming** - Kafka producer & consumer  
 ✅ **Workflow Orchestration** - Airflow DAG automation  
-✅ **Interactive Dashboards** - phpMyAdmin & Grafana  
+✅ **Interactive Dashboards** - Streamlit & phpMyAdmin  
 
 ### Business Problem
 
@@ -168,89 +168,21 @@ Smart Harvest adalah sistem prediksi hasil panen berbasis **Data Engineering** d
 ├─────────────────────────────────────────────────────────────────────────┤
 │  🌐 Web Interfaces:                                                     │
 │  ├─ phpMyAdmin (localhost:9090)    - Database management               │
-│  ├─ Grafana (localhost:3000)       - Real-time dashboards              │
+│  ├─ Streamlit (localhost:8501)     - Interactive Dashboard             │
 │  └─ Airflow (localhost:8085)       - Workflow monitoring               │
 └─────────────────────────────────────────────────────────────────────────┘
 ```
 
-### Data Flow Diagram
+### Visual Architecture
 
-```
-┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-│   CSV    │────▶│   ETL    │────▶│   Data   │────▶│    ML    │
-│  Files   │     │ Scripts  │     │Warehouse │     │ Training │
-└──────────┘     └──────────┘     └──────────┘     └──────────┘
-                                                          │
-                                                          ▼
-┌──────────┐     ┌──────────┐     ┌──────────┐     ┌──────────┐
-│ Grafana  │◀────│  MySQL   │◀────│  Kafka   │◀────│  Models  │
-│Dashboard │     │  (DW)    │     │ Consumer │     │  (.pkl)  │
-└──────────┘     └──────────┘     └──────────┘     └──────────┘
-                                        ▲
-                                        │
-                                  ┌──────────┐
-                                  │  Kafka   │
-                                  │ Producer │
-                                  └──────────┘
-```
+<img src="/home/lalalostnux/PemrosesaInfrastrukturData/DE_SmartHarvest/image/architecture.png" width="1000"/>  
 
 ---
 
 ## 🗄️ Data Warehouse Design
 
 ### Star Schema Architecture
-
-```
-                    ┌─────────────────┐
-                    │  dim_province   │
-                    ├─────────────────┤
-                    │ province_id PK  │
-                    │ province_name   │
-                    └────────┬────────┘
-                             │
-                             │ 1:N
-                             ▼
-┌─────────────────┐    ┌──────────────────────┐    ┌─────────────────┐
-│   dim_time      │    │ fact_production_     │    │ dim_commodity   │
-├─────────────────┤    │     monthly          │    ├─────────────────┤
-│ time_id PK      │◀───┤──────────────────────┤───▶│ commodity_id PK │
-│ year            │    │ production_id PK     │    │ commodity_name  │
-│ month           │    │ time_id FK           │    │ commodity_type  │
-│ month_name      │    │ province_id FK       │    └─────────────────┘
-│ quarter         │    │ commodity_id FK      │
-│ season          │    │ production_ton       │
-└─────────────────┘    └──────────────────────┘
-                             │
-                             │ 1:1
-                             ▼
-                    ┌──────────────────────┐
-                    │ fact_weather_        │
-                    │     monthly          │
-                    ├──────────────────────┤
-                    │ weather_id PK        │
-                    │ time_id FK           │
-                    │ province_id FK       │
-                    │ total_rainfall_mm    │
-                    │ avg_temperature_c    │
-                    │ avg_humidity_pct     │
-                    └──────────────────────┘
-                             │
-                             │ 1:1
-                             ▼
-                    ┌──────────────────────┐
-                    │ fact_crop_           │
-                    │   prediction         │
-                    ├──────────────────────┤
-                    │ prediction_id PK     │
-                    │ time_id FK           │
-                    │ province_id FK       │
-                    │ commodity_id FK      │
-                    │ predicted_ton        │
-                    │ model_name           │
-                    │ confidence_score     │
-                    │ created_at           │
-                    └──────────────────────┘
-```
+<img src="/home/lalalostnux/PemrosesaInfrastrukturData/DE_SmartHarvest/image/erd.png" width="1000"/>
 
 ### Database Schema Details
 
@@ -392,8 +324,8 @@ JOIN dim_commodity c ON pred.commodity_id = c.commodity_id
 - **Producer-Consumer** pattern
 
 ### Visualization Layer
+- **Streamlit** - Interactive Data App & ML Simulator
 - **phpMyAdmin** - Database management UI
-- **Grafana** - Real-time dashboards & analytics
 
 ### Orchestration Layer
 - **Apache Airflow** - DAG-based workflow automation
@@ -457,7 +389,7 @@ kafka                   Up              9092
 zookeeper               Up              2181
 airflow-webserver       Up (healthy)    8085
 airflow-scheduler       Up
-grafana                 Up              3000
+
 postgres_airflow        Up (healthy)    5432
 ```
 
@@ -880,7 +812,18 @@ Open browser: **http://localhost:8085**
 
 ## 🌐 Web Interfaces
 
-### 1. phpMyAdmin - Database Management
+### 1. Streamlit Dashboard (Interactive)
+
+**URL:** http://localhost:8501  
+**Command:** `python3 -m streamlit run dashboard.py`
+
+**Features:**
+- **Real-time Overview:** Total production, average temperature & rainfall
+- **Interactive Charts:** Production trends & seasonal analysis
+- **ML Simulator:** Adjust weather sliders (temp, rain, humidity) to predict harvest yield in real-time! 🤖
+- **Live Connection:** Directly connected to MySQL Data Warehouse
+
+### 2. phpMyAdmin - Database Management
 
 **URL:** http://localhost:9090  
 **Login:** root / root
@@ -942,71 +885,6 @@ GROUP BY commodity_name, model_name
 ORDER BY avg_r2 DESC;
 ```
 
-### 2. Grafana - Data Visualization
-
-**URL:** http://localhost:3000  
-**Login:** admin / admin
-
-**Setup MySQL Datasource:**
-
-1. Go to **Configuration** → **Data Sources**
-2. Click **Add data source**
-3. Select **MySQL**
-4. Configure:
-   - Host: `mysql_warehouse:3306`
-   - Database: `harvest_dw`
-   - User: `root`
-   - Password: `root`
-5. Click **Save & Test**
-
-**Sample Dashboard Panels:**
-
-**Panel 1: Production Trend by Commodity**
-```sql
-SELECT 
-    CONCAT(year, '-', LPAD(month, 2, '0'), '-01') as time,
-    commodity_name as metric,
-    SUM(production_ton) as value
-FROM vw_production_detail
-WHERE $__timeFilter(CONCAT(year, '-', LPAD(month, 2, '0'), '-01'))
-GROUP BY time, metric
-ORDER BY time
-```
-
-**Panel 2: Actual vs Predicted (Time Series)**
-```sql
-SELECT 
-    CONCAT(year, '-', LPAD(month, 2, '0'), '-01') as time,
-    'Actual' as metric,
-    SUM(production_ton) as value
-FROM vw_production_detail
-WHERE commodity_name = 'padi'
-GROUP BY time
-
-UNION ALL
-
-SELECT 
-    CONCAT(year, '-', LPAD(month, 2, '0'), '-01') as time,
-    'Predicted' as metric,
-    SUM(predicted_ton) as value
-FROM vw_prediction_detail
-WHERE commodity_name = 'padi'
-GROUP BY time
-ORDER BY time
-```
-
-**Panel 3: Real-time Streaming Predictions**
-```sql
-SELECT 
-    created_at as time,
-    predicted_ton as value,
-    CONCAT(province_name, ' - ', commodity_name) as metric
-FROM vw_prediction_detail
-WHERE model_name LIKE '%_streaming'
-ORDER BY created_at DESC
-LIMIT 1000
-```
-
 ### 3. Airflow - Workflow Orchestration
 
 **URL:** http://localhost:8085  
@@ -1032,6 +910,7 @@ DE_SmartHarvest/
 │
 ├── README.md                         # 📖 This complete documentation
 ├── STREAMING_GUIDE.md                # 📡 Kafka streaming guide
+├── dashboard.py                      # 📊 Streamlit Dashboard App
 ├── docker-compose.yml                # 🐳 Infrastructure definition
 ├── requirements.txt                  # 📦 Python dependencies
 │
@@ -1071,8 +950,6 @@ DE_SmartHarvest/
 │
 ├── logs/                             # 📝 Airflow logs (auto-generated)
 ├── plugins/                          # 🔌 Airflow plugins (empty)
-└── grafana/                          # 📊 Grafana config
-    └── provisioning/
 ```
 
 ---
@@ -1218,7 +1095,6 @@ Error: bind: address already in use
 ```bash
 # Check what's using the port
 sudo lsof -i :9090  # phpMyAdmin
-sudo lsof -i :3000  # Grafana
 sudo lsof -i :8085  # Airflow
 
 # Kill the process
@@ -1370,60 +1246,6 @@ This project demonstrates:
 
 ---
 
-## 🚀 Next Steps & Extensions
-
-### Short-term (1-2 weeks)
-
-1. **Improve Model Performance**
-   - Add more features
-   - Try Random Forest
-   - Hyperparameter tuning
-
-2. **Create Grafana Dashboards**
-   - Production trends
-   - Actual vs Predicted
-   - Real-time streaming monitor
-
-3. **Add Data Validation**
-   - Great Expectations
-   - Data quality checks
-   - Anomaly detection
-
-### Medium-term (1-2 months)
-
-1. **API Development**
-   - FastAPI REST endpoints
-   - Prediction API
-   - Data query API
-
-2. **Web Application**
-   - User-friendly UI
-   - Interactive charts
-   - Prediction requests
-
-3. **Automated Retraining**
-   - Monthly model updates
-   - A/B testing
-   - Model versioning
-
-### Long-term (3-6 months)
-
-1. **Production Deployment**
-   - Kubernetes orchestration
-   - CI/CD pipeline
-   - Monitoring & alerting
-
-2. **Advanced Analytics**
-   - Causal inference
-   - What-if analysis
-   - Recommendation system
-
-3. **Integration**
-   - Government data sources
-   - Real-time weather APIs
-   - Farmer mobile app
-
----
 
 ## 📄 License & Credits
 
@@ -1439,7 +1261,7 @@ This project demonstrates:
 **Technologies:**
 - MySQL, Apache Kafka, Apache Airflow
 - Python, Pandas, scikit-learn
-- Docker, Grafana, phpMyAdmin
+- Docker, Streamlit, phpMyAdmin
 
 ---
 

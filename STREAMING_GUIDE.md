@@ -17,7 +17,9 @@ Kafka Consumer (load model → predict)
     ↓
 MySQL (save predictions)
     ↓
-Grafana Dashboard (real-time visualization)
+MySQL (save predictions)
+    ↓
+Streamlit Dashboard (real-time visualization)
 ```
 
 ## Prerequisites
@@ -166,23 +168,19 @@ FROM fact_crop_prediction
 GROUP BY prediction_type;
 ```
 
-## Grafana Dashboard
+## Streamlit Dashboard
 
-Create a dashboard to visualize **real-time predictions**:
+Visualize **real-time predictions** using the interactive dashboard:
 
-1. Open Grafana: http://localhost:3000
-2. Add MySQL datasource
-3. Create panel with query:
-   ```sql
-   SELECT 
-       created_at as time,
-       predicted_ton as value,
-       commodity_name as metric
-   FROM vw_prediction_detail
-   WHERE model_name LIKE '%_streaming'
-   ORDER BY created_at DESC
-   LIMIT 1000
+1. Run the dashboard:
+   ```bash
+   python3 -m streamlit run dashboard.py
    ```
+2. Open http://localhost:8501
+3. Select **"All Commodities"** and **"All Provinces"**
+4. Watch the **"Total Production"** and charts update as new streaming data flows into MySQL!
+
+**Note:** The dashboard reads directly from the `harvest_dw` database, so as soon as the Kafka Consumer saves predictions, they will appear in the dashboard (refresh may be required depending on cache settings).
 
 ## Troubleshooting
 
@@ -215,6 +213,6 @@ docker exec kafka kafka-topics --delete --topic harvest-weather-stream --bootstr
 ## Next Steps
 
 1. **Add more features** to improve predictions
-2. **Create Grafana dashboard** for real-time monitoring
+2. **Use Streamlit dashboard** for real-time monitoring
 3. **Add alerting** for anomaly detection
 4. **Scale consumers** for higher throughput
