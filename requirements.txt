@@ -3,3 +3,5 @@ numpy
 scikit-learn
 mysql-connector-python
 kafka-python
+streamlit
+plotly
